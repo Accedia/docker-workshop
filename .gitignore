@@ -1,0 +1,14 @@
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+diagrams
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+*.pem
+NOTES.txt
+Notes
+participants.txt
+test

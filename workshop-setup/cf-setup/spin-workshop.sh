@@ -1,0 +1,2 @@
+#!/bin/bash
+aws --region eu-central-1 cloudformation create-stack --stack-name docker-workshop --template-body file://./workshop.yml --parameters ParameterKey=KeyName,ParameterValue=docker-ec2 ParameterKey=UserData,ParameterValue=$(base64 -w0 ~/docker/install-docker.sh) --client-request-token docker-workshop

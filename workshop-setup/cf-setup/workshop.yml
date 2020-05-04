@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CF tamplate to spin up ec2 instances with running docker deamons. Used for docker workshop @ Accedia.
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+  UserData:
+    Type: String
+    ConstraintDescription: User data should contain the docker install script.
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  AccediaIsp1Ip:
+    Description: The IP address range that can be used to access the EC2 instances
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 92.247.21.35/32
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  AccediaIsp2Ip:
+    Description: The IP address range that can be used to access the EC2 instances
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 212.73.143.178/32
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+Mappings:  
+  AWSRegionArch2AMI:
+    us-east-1: 
+      iamge: ami-062f7200baf2fa504
+    eu-central-1: 
+      image: ami-07cda0db070313c52    
+Resources:
+  # Clone the EC2 instances
+  EC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceType
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+      KeyName: !Ref KeyName
+      ImageId: !FindInMap 
+        - AWSRegionArch2AMI
+        - !Ref 'AWS::Region'
+        - image
+      UserData: !Ref UserData
+  # ---------------- END ---------------------
+
+
+
+
+  InstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          #FromPort: '22'
+          #ToPort: '22'
+          CidrIp: !Ref AccediaIsp1Ip
+        - IpProtocol: '-1'
+          #FromPort: '2375'
+          #ToPort: '2375'
+          CidrIp: !Ref AccediaIsp2Ip
+      # Include access to Docker Deamon
+Outputs:
+  # InstanceId:
+  #   Description: InstanceId of the newly created EC2 instance
+  #   Value: !Ref EC2Instance
+  # AZ:
+  #   Description: Availability Zone of the newly created EC2 instance
+  #   Value: !GetAtt 
+  #     - EC2Instance
+  #     - AvailabilityZone
+  # PublicDNS:
+  #   Description: Public DNSName of the newly created EC2 instance
+  #   Value: !GetAtt 
+  #     - EC2Instance
+  #     - PublicDnsName
+  PublicIP:
+    Description: Public IP address of the newly created EC2 instance
+    Value: !GetAtt 
+      - EC2Instance
+      - PublicIp
+  # PublicIP2:
+  #   Description: Public IP address of the newly created EC2 instance
+  #   Value: !GetAtt 
+  #     - EC2Instance2
+  #     - PublicIp
+  # PublicIP3:
+  #   Description: Public IP address of the newly created EC2 instance
+  #   Value: !GetAtt 
+  #     - EC2Instance3
+  #     - PublicIp
