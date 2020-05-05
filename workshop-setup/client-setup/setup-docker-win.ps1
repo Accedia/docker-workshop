@@ -10,12 +10,14 @@ param(
 if ((Get-Command "docker.exe" -ErrorAction SilentlyContinue) -eq $null) 
 {
    Write-Host "Downloading docker cli and docker-compose cli"
-   mkdir "$HOME\docker-client"
+   if (-not (Test-Path "$HOME\docker-client")) {
+      mkdir "$HOME\docker-client"
+   }   
    cd "$HOME\docker-client"
    wget https://github.com/Jessie365/docker-workshop/raw/develop/bin/docker.exe -OutFile docker.exe
    wget https://github.com/Jessie365/docker-workshop/raw/develop/bin/docker-compose.exe -OutFile docker-compose.exe
    $envPath = [System.Environment]::GetEnvironmentVariable('PATH', [System.EnvironmentVariableTarget]::User)
-   $envPath += "$HOME\docker-client"
+   $envPath += ";$HOME\docker-client"
    [System.Environment]::SetEnvironmentVariable('PATH', $envPath, [System.EnvironmentVariableTarget]::User)
 }
 
