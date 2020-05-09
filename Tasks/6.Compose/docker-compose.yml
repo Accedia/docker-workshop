@@ -1,0 +1,47 @@
+version: "2"
+
+services:
+  vote:
+    image: dockersamples/examplevotingapp_vote:latest
+    networks:
+      - front-end-subnet
+    ports:
+      - "80:80"
+
+  # Hint: On which port the container is listening?
+  result:
+    image: dockersamples/examplevotingapp_result:latest
+    networks:
+      - back-end-subnet
+    ports:
+      - "8080:8080"
+
+  # Hint: What network is going to be attached to the worker service?
+  worker:
+    image: dockersamples/examplevotingapp_worker:latest
+    depends_on:
+      - "redis"
+      - "db"
+
+  # Hint: Should we care about the service name?
+  redis-mredis:
+    image: redis:3.2
+    networks:
+      - front-end-subnet
+
+  # Hint: environment variable should be set to allow connections without setting database password
+  db:
+    image: postgres:9.4
+    networks:
+      - back-end-subnet
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+# Hint: Do we need volumes section?
+
+# Hint: Do we need special network drivers to run the app?
+networks:
+  front-end-subnet:
+    driver: custom
+  back-end-subnet:
+    driver: bridge
