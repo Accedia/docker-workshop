@@ -3,7 +3,7 @@
 Run a container **mypsql** using **postgres:12** with options to:
  - run in detached mode
  - pass the appropriate environment variable (find it on https://hub.docker.com/)
- - use a named volume
+ - use a named volume (target: **/var/lib/postgresql/data**)
 
 Run bash in the container and use psql to add a table and a record:
  - $ `psql -U postgres`
