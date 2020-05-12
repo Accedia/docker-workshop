@@ -13,5 +13,5 @@ Run bash in the container and use psql to add a table and a record:
 Exit the container and delete it. Run a new container with the same options (use ***the same*** volume name).
 
 Run bash inside the new container and see if your data has survived:
- - $ `psql –U postgres`
+ - $ `psql -U postgres`
  - $ `select * from public.films;`
